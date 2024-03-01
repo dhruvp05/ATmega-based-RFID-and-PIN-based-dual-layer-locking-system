@@ -31,7 +31,7 @@ byte colPins[COLS] = { 5, A1, A2, A0};  //connect to the column pinouts of the k
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 char customKey;  //Stores the character for pressed key
 
-const int Password_Length = 5;  //4 character password
+const int Password_Length = 4;  //4 character password
 char Data[Password_Length];
 const char Master[Password_Length] = "1A2B";
 byte data_count = 0;
@@ -104,14 +104,14 @@ void loop() {
           Data[data_count] = customKey;
           data_count++;
         }
-        if(data_count == Password_Length -1){
+        if(data_count == Password_Length){
           //Break the loop when required no. of characters are pressed
           break;
         }
       }
       }
       
-      if (data_count == Password_Length - 1) {
+      if (data_count == Password_Length) {
         if (!strcmp(Data, Master)) {
           //If Data array matches Master array unlock the servo for 10 seconds
           lcd.clear();
