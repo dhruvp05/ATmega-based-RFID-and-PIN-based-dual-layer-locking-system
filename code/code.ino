@@ -64,37 +64,23 @@ void loop() {
   if (!mfrc522.PICC_ReadCardSerial()) {
     return;
   }
+
+  recordUID[0] = mfrc522.uid.uidByte[0];
+  recordUID[1] = mfrc522.uid.uidByte[1];
+  recordUID[2] = mfrc522.uid.uidByte[2];
+  recordUID[3] = mfrc522.uid.uidByte[3];
+
   
   //See if UID matches the saved UID C1 B5 F5 19
-  if (mfrc522.uid.uidByte[0] == accessUID[0] && mfrc522.uid.uidByte[1] == accessUID[1] && mfrc522.uid.uidByte[2] == accessUID[2] && mfrc522.uid.uidByte[3] == accessUID[3]) {
+  if (recordUID[0] == accessUID[0] && recordUID[1] == accessUID[1] && recordUID[2] == accessUID[2] && recordUID[3] == accessUID[3]) {
     Serial.println("Card Matched");
-    //Update the recordUID byte with UID scanned
-    recordUID[0]=accessUID[0];
-    recordUID[1]=accessUID[1];
-    recordUID[2]=accessUID[2];
-    recordUID[3]=accessUID[3];
-    }
-    else{
-      //If UID doesn't match activate the buzzer of 2 seconds
-      digitalWrite(buzzer_pin, HIGH);
-      delay(2000);
-      digitalWrite(buzzer_pin, LOW);
-      lcd.clear();
-      lcd.setCursor(0,0);
-      lcd.print("Card is not");
-      lcd.setCursor(0,1);
-      lcd.print("matched");
-      delay(5000);
-      lcd.clear();
-      lcd.setCursor(0,0);
-      lcd.print("Scan your card");
-    }
-    if(recordUID[0] == accessUID[0] && recordUID[1] == accessUID[1] && recordUID[2] == accessUID[2] && recordUID[3] == accessUID[3]){
+      //Update the recordUID byte with UID scanned
       //If card is matched we need to enter the password
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Enter Password");
       lcd.setCursor(0,1);
+      
       while(true){
         //Keep on continuously checking if there is a character is pressed
         customKey = customKeypad.getKey();
@@ -109,9 +95,7 @@ void loop() {
           break;
         }
       }
-      }
       
-      if (data_count == Password_Length) {
         if (!strcmp(Data, Master)) {
           //If Data array matches Master array unlock the servo for 10 seconds
           lcd.clear();
@@ -138,10 +122,25 @@ void loop() {
           lcd.setCursor(0,0);
           lcd.print("Scan your card");
         }
- 
-    // Clear Data array and LCD display
+    }
+    else{
+      //If UID doesn't match activate the buzzer of 2 seconds
+      digitalWrite(buzzer_pin, HIGH);
+      delay(2000);
+      digitalWrite(buzzer_pin, LOW);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Card is not");
+      lcd.setCursor(0,1);
+      lcd.print("matched");
+      delay(5000);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Scan your card");
+    }
+      
+  // Clear Data array and LCD display
     clearData();
-  }
 
   mfrc522.PICC_HaltA();
 }
